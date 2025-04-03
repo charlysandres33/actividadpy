@@ -1,0 +1,96 @@
+registro venta
+
+import os
+
+ARCHIVO_VENTAS = "ventas.txt"
+
+def cargar_ventas():
+    if not os.path.exists(ARCHIVO_VENTAS):
+        return []
+    with open(ARCHIVO_VENTAS, "r", encoding="utf-8") as file:
+        return [line.strip().split(',') for line in file.readlines()]
+
+def guardar_ventas(ventas):
+    with open(ARCHIVO_VENTAS, "w", encoding="utf-8") as file:
+        for venta in ventas:
+            file.write(",".join(venta) + "\n")
+
+def registrar_venta():
+    producto = input("Nombre del producto: ")
+    cantidad = input("Cantidad vendida: ")
+    precio = input("Precio unitario: ")
+    total = str(float(cantidad) * float(precio))
+    ventas = cargar_ventas()
+    ventas.append([producto, cantidad, precio, total])
+    guardar_ventas(ventas)
+    print("Venta registrada con éxito!\n")
+
+def mostrar_ventas():
+    ventas = cargar_ventas()
+    if not ventas:
+        print("No hay ventas registradas.\n")
+        return
+    print("Ventas Registradas:")
+    for i, venta in enumerate(ventas, 1):
+        print(f"{i}. Producto: {venta[0]}, Cantidad: {venta[1]}, Precio: {venta[2]}, Total: {venta[3]}")
+    print()
+
+def buscar_venta():
+    producto = input("Introduce el nombre del producto a buscar: ")
+    ventas = cargar_ventas()
+    resultados = [venta for venta in ventas if producto.lower() in venta[0].lower()]
+    if resultados:
+        print("Ventas encontradas:")
+        for venta in resultados:
+            print(f"Producto: {venta[0]}, Cantidad: {venta[1]}, Precio: {venta[2]}, Total: {venta[3]}")
+    else:
+        print("No se encontraron ventas para ese producto.")
+    print()
+
+def calcular_total_ventas():
+    ventas = cargar_ventas()
+    total = sum(float(venta[3]) for venta in ventas)
+    print(f"Total de todas las ventas: {total}\n")
+
+def eliminar_venta():
+    mostrar_ventas()
+    try:
+        num_venta = int(input("Introduce el número de la venta a eliminar: "))
+        ventas = cargar_ventas()
+        if 1 <= num_venta <= len(ventas):
+            del ventas[num_venta - 1]
+            guardar_ventas(ventas)
+            print("Venta eliminada con éxito!\n")
+        else:
+            print("Número de venta inválido.\n")
+    except ValueError:
+        print("Por favor, ingresa un número válido.\n")
+
+def menu():
+    while True:
+        print("\nRegistro de Ventas")
+        print("1. Registrar Venta")
+        print("2. Mostrar Ventas")
+        print("3. Buscar Venta")
+        print("4. Calcular Total de Ventas")
+        print("5. Eliminar Venta")
+        print("6. Salir")
+        opcion = input("Selecciona una opción: ")
+        if opcion == "1":
+            registrar_venta()
+        elif opcion == "2":
+            mostrar_ventas()
+        elif opcion == "3":
+            buscar_venta()
+        elif opcion == "4":
+            calcular_total_ventas()
+        elif opcion == "5":
+            eliminar_venta()
+        elif opcion == "6":
+            print("Saliendo del registro de ventas. ¡Hasta luego!")
+            break
+        else:
+            print("Opción inválida. Inténtalo de nuevo.\n")
+
+if __name__ == "__main__":
+    menu()
